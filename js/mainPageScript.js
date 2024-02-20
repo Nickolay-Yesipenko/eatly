@@ -15,6 +15,7 @@ class LoadingImage {
         this.pathToImage = path;
         this.altImage = alt;
         this.timeout = timeout;
+        this.stub = this.createStub();
     }
     // Метод Возвращающий заглушку
     createStub() {
@@ -26,14 +27,21 @@ class LoadingImage {
         stub.style.userSelect = "none";
         stub.append(document.
             createElement("div").
-            textContent = "Loading Logo");
+            textContent = "Loading image");
         return stub;
     }
     // Метод создающий картинку
     createImage() {
+        // Избегание потери контекста
+        const self = this;
         /*При создании через document.create картинка подгружается асинхронно.
         По этой причине можно подвестиь слушатель на событие загрузки или ошибки.*/
         const image = document.createElement("img");
+        // Слушатель ошибки
+        // на асинхронном коде try-catch не работают, потому событием
+        image.addEventListener("error", function () {
+            self.stub.textContent = "Failed loading!";
+        });
         image.src = this.pathToImage;
         image.alt = this.altImage;
         return image;
@@ -43,9 +51,8 @@ class LoadingImage {
         // переменная для избегания потери контекста
         const self = this;
         const image = this.createImage();
-        const stub = this.createStub();
         // помещение заглушки на место картинки
-        this.imageContainer.append(stub);
+        this.imageContainer.append(self.stub);
         // условие для работы в тестовом режиме и нет
         if (this.timeout == 0) {
             // Слушатель загрузки
@@ -55,18 +62,13 @@ class LoadingImage {
                 // Помещение на его места картинки
                 self.imageContainer.append(image);
             });
-            // Слушатель ошибки
-            // на асинхронном коде try-catch не работают, потому событием
-            image.addEventListener("error", function () {
-                stub.textContent = "Failed loading!";
-            });
         }
         else {
             // Слушатель с задержкой появления картинки
             image.addEventListener("load", function () {
                 //Демонстрация работы подгрузки
                 setTimeout(function () {
-                    if (stub.textContent != "Failed loading!") {
+                    if (self.stub.textContent != "Failed loading!") {
                         //Очистка места логотипа от блока заглушки
                         self.imageContainer.innerHTML = '';
                         // Помещение на его места картинки
@@ -75,14 +77,14 @@ class LoadingImage {
                 }, self.timeout);
             });
             // Ломающий ссылку на картинку слушатель, для теста ошибки
-            stub.addEventListener("click", function () {
+            self.stub.addEventListener("click", function () {
                 image.src = "#";
-                stub.textContent = "Failed loading!";
+                self.stub.textContent = "Failed loading!";
             });
         }
     }
 }
-// получение контейнера для картинки
+// получение контейнера для картинки логотипа
 const logoContainer = document.querySelector(".mainLogo");
 // Вариант для логотипа компании с тестом
 const logoImage = new LoadingImage(logoContainer, "img/mainLogo.svg", "logo", 2000);
@@ -111,4 +113,30 @@ for (elem of stars) {
     const iteration = new LoadingImage(elem, "img/starimage.svg", "star", 1000);
     iteration.finalyImage();
 }
+elem = null;
+// Блок продающих картинок
+// Большая картинка блюда
+const bigFoodImageContainer = document.querySelector(".bigFoodImage");
+const bigFoodimage = new LoadingImage(bigFoodImageContainer, "img/bigFoodImage.svg", "bigfood", 4000);
+bigFoodimage.finalyImage();
+// Маленькая картинка блюда
+const orderImageContainer = document.querySelector(".orderImage");
+const orderImage = new LoadingImage(orderImageContainer, "img/bigFoodImage.svg", "order image", 4000);
+orderImage.finalyImage();
+// График 
+const shaduleContainer = document.querySelector(".shadule");
+const shadule = new LoadingImage(shaduleContainer, "img/shadule.png", "shadule", 3500);
+shadule.finalyImage();
+// Рисунок снизу
+const downDrawingContainer = document.querySelector(".downDrawing");
+const downDrawing = new LoadingImage(downDrawingContainer, "img/downDrawing.svg", "down draw", 1000);
+downDrawing.finalyImage();
+// Рисунок сверху
+const topDrawingContainer = document.querySelector(".topDrawing");
+const topDrawing = new LoadingImage(topDrawingContainer, "img/topDrawing.svg", "top draw", 1000);
+topDrawing.finalyImage();
+// Стрелка сверху
+const topArrowContainer = document.querySelector(".topArrowDrawing");
+const topArrow = new LoadingImage(topArrowContainer, "img/topArrowDrawing.svg", "arrow", 1500);
+topArrow.finalyImage();
 //# sourceMappingURL=mainPageScript.js.map
