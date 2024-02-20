@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "removeComments": false,
+        "sourceMap": true,
+        "noEmitOnError": true,
+        "alwaysStrict": true,
+        "allowUnreachableCode": false,
+    }
+}
